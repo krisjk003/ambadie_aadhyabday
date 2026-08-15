@@ -1,0 +1,15 @@
+<svg width="600" height="800" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="grad5" cx="35%" cy="25%" r="40%">
+        <stop offset="0%" stop-color="#F4C95D" stop-opacity="0.3" />
+        <stop offset="100%" stop-color="#0A0A15" stop-opacity="1" />
+      </radialGradient>
+      <filter id="noise5">
+        <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+        <feColorMatrix type="matrix" values="1 0 0 0 0, 0 1 0 0 0, 0 0 1 0 0, 0 0 0 0.1 0" />
+      </filter>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#grad5)"/>
+    <rect width="100%" height="100%" filter="url(#noise5)" opacity="0.4" mix-blend-mode="overlay"/>
+    <circle cx="65%" cy="75%" r="20%" fill="#F4C95D" opacity="0.1" filter="blur(40px)"/>
+  </svg>
