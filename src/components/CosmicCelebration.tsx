@@ -20,6 +20,7 @@ export function CosmicCelebration({ playInitialBurst = true }: CosmicCelebration
     let particles: Particle[] = [];
     let width = window.innerWidth;
     let height = window.innerHeight;
+    let isMobile = window.innerWidth < 768;
 
     canvas.width = width;
     canvas.height = height;
@@ -27,6 +28,7 @@ export function CosmicCelebration({ playInitialBurst = true }: CosmicCelebration
     const handleResize = () => {
       width = window.innerWidth;
       height = window.innerHeight;
+      isMobile = window.innerWidth < 768;
       canvas.width = width;
       canvas.height = height;
     };
@@ -115,7 +117,7 @@ export function CosmicCelebration({ playInitialBurst = true }: CosmicCelebration
         ctx.fillStyle = this.color;
         
         // Add glow for larger particles
-        if (this.radius > 1.5) {
+        if (this.radius > 1.5 && !isMobile) {
           ctx.shadowBlur = 10;
           ctx.shadowColor = this.color;
         }
@@ -134,7 +136,8 @@ export function CosmicCelebration({ playInitialBurst = true }: CosmicCelebration
     };
 
     // Initialize background stars
-    for (let i = 0; i < 150; i++) {
+    const backgroundStarsCount = isMobile ? 75 : 150;
+    for (let i = 0; i < backgroundStarsCount; i++) {
       particles.push(new Particle(Math.random() * width, Math.random() * height, false, true));
     }
 
@@ -144,12 +147,15 @@ export function CosmicCelebration({ playInitialBurst = true }: CosmicCelebration
       const centerY = height / 2;
       
       // Initial massive burst
-      createBurst(centerX, centerY, 500);
+      const mainBurstCount = isMobile ? 250 : 500;
+      createBurst(centerX, centerY, mainBurstCount);
 
       // Timed secondary bursts
-      setTimeout(() => createBurst(centerX, centerY, 200), 1000);
-      setTimeout(() => createBurst(width * 0.2, height * 0.3, 150), 2500);
-      setTimeout(() => createBurst(width * 0.8, height * 0.7, 150), 4000);
+      const secondaryBurstCount = isMobile ? 100 : 200;
+      const tertiaryBurstCount = isMobile ? 75 : 150;
+      setTimeout(() => createBurst(centerX, centerY, secondaryBurstCount), 1000);
+      setTimeout(() => createBurst(width * 0.2, height * 0.3, tertiaryBurstCount), 2500);
+      setTimeout(() => createBurst(width * 0.8, height * 0.7, tertiaryBurstCount), 4000);
     }
 
     // Occasional mini-bursts loop

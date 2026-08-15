@@ -17,9 +17,11 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let w = (canvas.width = canvas.offsetWidth * window.devicePixelRatio);
-    let h = (canvas.height = canvas.offsetHeight * window.devicePixelRatio);
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    const isMobile = window.innerWidth < 768;
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2);
+    let w = (canvas.width = canvas.offsetWidth * dpr);
+    let h = (canvas.height = canvas.offsetHeight * dpr);
+    ctx.scale(dpr, dpr);
     const dw = canvas.offsetWidth;
     const dh = canvas.offsetHeight;
 
@@ -29,7 +31,7 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
       "rgba(255,255,255,", "rgba(200,210,255,", "rgba(180,160,255,",
       "rgba(255,200,240,", "rgba(160,230,255,", "rgba(244,201,93,"
     ];
-    const stars: Star[] = Array.from({ length: 200 }, () => ({
+    const stars: Star[] = Array.from({ length: isMobile ? 100 : 200 }, () => ({
       x: Math.random() * dw,
       y: Math.random() * dh,
       r: Math.random() * 1.8 + 0.3,
@@ -46,7 +48,7 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
       "rgba(137,44,220,", "rgba(192,91,244,", "rgba(34,211,238,",
       "rgba(255,180,220,", "rgba(244,201,93,", "rgba(255,255,255,"
     ];
-    const dust: Dust[] = Array.from({ length: 120 }, () => ({
+    const dust: Dust[] = Array.from({ length: isMobile ? 60 : 120 }, () => ({
       x: Math.random() * dw, y: Math.random() * dh,
       r: Math.random() * 2 + 0.5,
       vx: (Math.random() - 0.5) * 0.3,
@@ -58,7 +60,7 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
 
     // ── Orbital particles ──
     interface OrbitalParticle { angle: number; radius: number; speed: number; size: number; eccentricity: number; tilt: number; color: string }
-    const orbitals: OrbitalParticle[] = Array.from({ length: 12 }, () => ({
+    const orbitals: OrbitalParticle[] = Array.from({ length: isMobile ? 6 : 12 }, () => ({
       angle: Math.random() * Math.PI * 2,
       radius: 150 + Math.random() * 250,
       speed: (Math.random() * 0.003 + 0.001) * (Math.random() > 0.5 ? 1 : -1),
@@ -79,7 +81,8 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
         "rgba(255,255,255,", "rgba(137,44,220,", "rgba(192,91,244,",
         "rgba(34,211,238,", "rgba(255,180,220,", "rgba(244,201,93,"
       ];
-      for (let i = 0; i < 200; i++) {
+      const burstCount = isMobile ? 100 : 200;
+      for (let i = 0; i < burstCount; i++) {
         const angle = Math.random() * Math.PI * 2;
         const speed = Math.random() * 2.5 + 0.5;
         burstParticles.push({
@@ -107,9 +110,11 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
     canvas.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     const handleResize = () => {
-      w = canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-      h = canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const currentIsMobile = window.innerWidth < 768;
+      const currentDpr = Math.min(window.devicePixelRatio || 1, currentIsMobile ? 1.5 : 2);
+      w = canvas.width = canvas.offsetWidth * currentDpr;
+      h = canvas.height = canvas.offsetHeight * currentDpr;
+      ctx.scale(currentDpr, currentDpr);
     };
     window.addEventListener("resize", handleResize, { passive: true });
 
@@ -150,8 +155,10 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
       };
       drawNebula(cw * 0.3 + parallaxX * 15, ch * 0.4 + parallaxY * 10, 400, "rgba(137,44,220,X)", 0.08, 0);
       drawNebula(cw * 0.7 + parallaxX * 12, ch * 0.6 + parallaxY * 8, 350, "rgba(192,91,244,X)", 0.06, 2);
-      drawNebula(cw * 0.5 + parallaxX * 8, ch * 0.3 + parallaxY * 6, 300, "rgba(34,211,238,X)", 0.04, 4);
-      drawNebula(cw * 0.2 + parallaxX * 10, ch * 0.7 + parallaxY * 12, 280, "rgba(255,160,210,X)", 0.05, 1.5);
+      if (!isMobile) {
+        drawNebula(cw * 0.5 + parallaxX * 8, ch * 0.3 + parallaxY * 6, 300, "rgba(34,211,238,X)", 0.04, 4);
+        drawNebula(cw * 0.2 + parallaxX * 10, ch * 0.7 + parallaxY * 12, 280, "rgba(255,160,210,X)", 0.05, 1.5);
+      }
 
       // ── Stars ──
       for (const s of stars) {

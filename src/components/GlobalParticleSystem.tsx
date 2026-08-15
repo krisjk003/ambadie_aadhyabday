@@ -94,13 +94,13 @@ class Particle {
     if (this.y > height) this.y = 0;
   }
 
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, isMobile: boolean = false) {
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
     ctx.fillStyle = this.color;
     ctx.fill();
 
-    if (this.type === "special") {
+    if (this.type === "special" && !isMobile) {
       const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 4);
       gradient.addColorStop(0, `rgba(192, 91, 244, ${this.alpha * 0.5})`);
       gradient.addColorStop(1, 'rgba(192, 91, 244, 0)');
@@ -125,7 +125,7 @@ export function GlobalParticleSystem() {
     canvas.height = height;
 
     // Adjust count based on mobile/desktop
-    const isMobile = width < 768;
+    let isMobile = width < 768;
     const dustCount = isMobile ? 30 : 100;
     const starCount = isMobile ? 30 : 120;
     const specialCount = isMobile ? 3 : 10;
@@ -146,6 +146,7 @@ export function GlobalParticleSystem() {
     const handleResize = () => {
       width = window.innerWidth;
       height = window.innerHeight;
+      isMobile = width < 768;
       canvas.width = width;
       canvas.height = height;
     };
@@ -181,7 +182,7 @@ export function GlobalParticleSystem() {
         ctx.clearRect(0, 0, width, height);
         
         // Draw soft ambient gradient near cursor
-        if (isHovering) {
+        if (isHovering && !isMobile) {
           const ambient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 400);
           ambient.addColorStop(0, 'rgba(75, 29, 130, 0.05)'); // subtle violet glow
           ambient.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -191,7 +192,7 @@ export function GlobalParticleSystem() {
 
         particles.forEach(p => {
           p.update(width, height, mouseX, mouseY, isHovering);
-          p.draw(ctx);
+          p.draw(ctx, isMobile);
         });
       }
       animationFrameId = requestAnimationFrame(render);
