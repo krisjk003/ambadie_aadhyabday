@@ -94,22 +94,39 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
       }
     };
 
+    let lastMouseTime = 0;
     const handleMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current.x = (e.clientX - rect.left) / rect.width;
-      mouseRef.current.y = (e.clientY - rect.top) / rect.height;
+      const now = performance.now();
+      if (now - lastMouseTime > 16) {
+        const rect = canvas.getBoundingClientRect();
+        mouseRef.current.x = (e.clientX - rect.left) / rect.width;
+        mouseRef.current.y = (e.clientY - rect.top) / rect.height;
+        lastMouseTime = now;
+      }
     };
-    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     const handleResize = () => {
       w = canvas.width = canvas.offsetWidth * window.devicePixelRatio;
       h = canvas.height = canvas.offsetHeight * window.devicePixelRatio;
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
 
+    let isVisible = false;
     let animId: number;
+
+    const observer = new IntersectionObserver((entries) => {
+      const wasVisible = isVisible;
+      isVisible = entries[0].isIntersecting;
+      if (isVisible && !wasVisible) {
+        draw();
+      }
+    });
+    observer.observe(canvas);
+
     const draw = () => {
+      if (!isVisible) return;
       frameRef.current++;
       const t = frameRef.current;
       const cw = canvas.offsetWidth;
@@ -235,6 +252,7 @@ function CosmicCanvas({ hasRevealed }: { hasRevealed: boolean }) {
 
     return () => {
       cancelAnimationFrame(animId);
+      observer.disconnect();
       canvas.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
     };
@@ -328,12 +346,17 @@ export function FinalCinematicSection() {
   const textX = useTransform(springX, [-1, 1], [-3, 3]);
   const textY = useTransform(springY, [-1, 1], [-2, 2]);
 
+  const lastMouseTime = useRef(0);
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    mouseX.set(nx);
-    mouseY.set(ny);
+    const now = performance.now();
+    if (now - lastMouseTime.current > 16) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+      const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      mouseX.set(nx);
+      mouseY.set(ny);
+      lastMouseTime.current = now;
+    }
   }, [mouseX, mouseY]);
 
   return (

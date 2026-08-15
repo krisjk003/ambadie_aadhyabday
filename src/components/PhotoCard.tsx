@@ -41,17 +41,22 @@ export function PhotoCard({ realSrc, cartoonSrc, isDraggable = false, className 
   const reflectionX = useTransform(mouseXSpring, [-0.5, 0.5], ["0%", "100%"]);
   const reflectionY = useTransform(mouseYSpring, [-0.5, 0.5], ["0%", "100%"]);
 
+  const lastMouseTime = useRef(0);
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-    const mouseX = e.clientX - rect.left;
-    const mouseY = e.clientY - rect.top;
-    const xPct = mouseX / width - 0.5;
-    const yPct = mouseY / height - 0.5;
-    x.set(xPct);
-    y.set(yPct);
+    const now = performance.now();
+    if (now - lastMouseTime.current > 16) {
+      if (!cardRef.current) return;
+      const rect = cardRef.current.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      const xPct = mouseX / width - 0.5;
+      const yPct = mouseY / height - 0.5;
+      x.set(xPct);
+      y.set(yPct);
+      lastMouseTime.current = now;
+    }
   };
 
   const handleMouseEnter = () => {
@@ -139,6 +144,7 @@ export function PhotoCard({ realSrc, cartoonSrc, isDraggable = false, className 
         {/* The Base Images Container */}
         <motion.div 
           className="absolute inset-0 rounded-xl overflow-hidden shadow-2xl bg-[#03010A] border border-white/10"
+          style={{ willChange: "filter" }}
           animate={{ filter: `blur(${blurAmount}px)` }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
         >

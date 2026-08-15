@@ -64,9 +64,10 @@ class Particle {
     // Magnetic space effect - cursor interaction
     const dx = mouseX - this.x;
     const dy = mouseY - this.y;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const distanceSq = dx * dx + dy * dy;
     
-    if (distance < 200 && isHovering) {
+    if (distanceSq < 40000 && isHovering) {
+      const distance = Math.sqrt(distanceSq);
       // Subtle magnetic pull
       const force = (200 - distance) / 200;
       this.x += dx * force * 0.01;
@@ -125,9 +126,9 @@ export function GlobalParticleSystem() {
 
     // Adjust count based on mobile/desktop
     const isMobile = width < 768;
-    const dustCount = isMobile ? 50 : 150;
-    const starCount = isMobile ? 50 : 200;
-    const specialCount = isMobile ? 5 : 15;
+    const dustCount = isMobile ? 30 : 100;
+    const starCount = isMobile ? 30 : 120;
+    const specialCount = isMobile ? 3 : 10;
 
     const particles: Particle[] = [];
     
@@ -140,6 +141,7 @@ export function GlobalParticleSystem() {
     let mouseY = -1000;
     let isHovering = false;
     let isVisible = true;
+    let lastMouseTime = 0;
 
     const handleResize = () => {
       width = window.innerWidth;
@@ -149,9 +151,13 @@ export function GlobalParticleSystem() {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      isHovering = true;
+      const now = performance.now();
+      if (now - lastMouseTime > 16) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        isHovering = true;
+        lastMouseTime = now;
+      }
     };
     
     const handleMouseLeave = () => {
@@ -163,9 +169,9 @@ export function GlobalParticleSystem() {
       isVisible = document.visibilityState === 'visible';
     };
 
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseleave", handleMouseLeave);
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    window.addEventListener("mouseleave", handleMouseLeave, { passive: true });
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     let animationFrameId: number;

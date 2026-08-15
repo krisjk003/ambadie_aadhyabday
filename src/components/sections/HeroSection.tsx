@@ -280,12 +280,15 @@ function AnimatedNumber({ value, label, isBirthday }: { value: number, label: st
         <AnimatePresence mode="popLayout">
           <motion.div
             key={value}
-            initial={{ y: 20, opacity: 0, filter: "blur(5px)" }}
-            animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-            exit={{ y: -20, opacity: 0, filter: "blur(5px)" }}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
             className={`absolute font-display text-5xl md:text-7xl font-bold tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-colors duration-1000 ${isBirthday ? 'text-white' : 'text-white'}`}
-            style={{ textShadow: isBirthday ? "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(217, 70, 239, 0.4)" : "0 0 15px rgba(255,255,255,0.3)" }}
+            style={{ 
+              textShadow: isBirthday ? "0 0 20px rgba(255, 255, 255, 0.8), 0 0 40px rgba(217, 70, 239, 0.4)" : "0 0 15px rgba(255,255,255,0.3)",
+              willChange: "transform, opacity"
+            }}
           >
             {value.toString().padStart(2, '0')}
           </motion.div>

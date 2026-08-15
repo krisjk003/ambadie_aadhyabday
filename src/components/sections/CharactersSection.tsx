@@ -27,7 +27,7 @@ const GatheringParticles = ({ color }: { color: string }) => {
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: p.duration, delay: p.delay, ease: "easeInOut" }}
           className="absolute w-1 h-1 rounded-full shadow-[0_0_10px_currentColor]"
-          style={{ backgroundColor: color, color: color }}
+          style={{ backgroundColor: color, color: color, willChange: "transform, opacity" }}
         />
       ))}
     </div>
@@ -92,6 +92,7 @@ export function CharactersSection() {
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               className="absolute inset-0 bg-[var(--color-accent-gold)]/5 blur-[100px] rounded-full pointer-events-none transition-all duration-700 group-hover:bg-[var(--color-accent-gold)]/20 group-hover:scale-110"
+              style={{ willChange: "transform, opacity" }}
             />
             
             <motion.div 
@@ -100,6 +101,7 @@ export function CharactersSection() {
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               className="w-[300px] h-[400px] md:w-[400px] md:h-[530px] mb-12 relative z-10 transition-transform duration-700"
+              style={{ willChange: "transform, opacity, filter" }}
             >
               <div className="w-full h-full relative">
                 {/* Cinematic Border Resolve */}
@@ -155,6 +157,7 @@ export function CharactersSection() {
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               className="absolute inset-0 bg-[var(--color-accent-cyan)]/5 blur-[100px] rounded-full pointer-events-none transition-all duration-700 group-hover:bg-[var(--color-accent-cyan)]/20 group-hover:scale-110"
+              style={{ willChange: "transform, opacity" }}
             />
             
             <motion.div 
@@ -163,6 +166,7 @@ export function CharactersSection() {
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
               className="w-[300px] h-[400px] md:w-[400px] md:h-[530px] mb-12 relative z-10 transition-transform duration-700"
+              style={{ willChange: "transform, opacity, filter" }}
             >
               <div className="w-full h-full relative">
                 {/* Cinematic Border Resolve */}
