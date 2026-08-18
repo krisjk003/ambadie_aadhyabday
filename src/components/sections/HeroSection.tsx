@@ -13,6 +13,7 @@ export function HeroSection({ onEnter }: { onEnter: () => void }) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isBirthday, setIsBirthday] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [popupDismissed, setPopupDismissed] = useState(false);
   const [celebrationPhase, setCelebrationPhase] = useState(0);
   
   // Ref to track if we've initialized the countdown
@@ -107,11 +108,11 @@ export function HeroSection({ onEnter }: { onEnter: () => void }) {
 
   // Check if we need to show popup for direct loads
   useEffect(() => {
-    if (phase >= 4 && isBirthday && celebrationPhase === 5 && !showPopup) {
+    if (phase >= 4 && isBirthday && celebrationPhase === 5 && !showPopup && !popupDismissed) {
       const t = setTimeout(() => setShowPopup(true), 2000);
       return () => clearTimeout(t);
     }
-  }, [phase, isBirthday, celebrationPhase, showPopup]);
+  }, [phase, isBirthday, celebrationPhase, showPopup, popupDismissed]);
 
   return (
     <div className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-transparent text-white">
@@ -267,7 +268,14 @@ export function HeroSection({ onEnter }: { onEnter: () => void }) {
       </motion.div>
 
       <AnimatePresence>
-        {showPopup && <BirthdayPopup onEnter={onEnter} />}
+        {showPopup && <BirthdayPopup onEnter={() => {
+          setPopupDismissed(true);
+          setShowPopup(false);
+          onEnter();
+          setTimeout(() => {
+            window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });
+          }, 200);
+        }} />}
       </AnimatePresence>
     </div>
   );
